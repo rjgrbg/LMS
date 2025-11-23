@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCOSCI1 Learning Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-circle">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>SCOSCI1</h1>
+                    <span>Contemporary Issues</span>
+                </div>
+            </div>
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search materials..." class="search-box" id="searchBox">
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <!-- Main Content -->
+        <main class="content">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <div class="welcome-badge">
+                        <i class="fas fa-star"></i>
+                        <span>Welcome to Contemporary Issues</span>
+                    </div>
+                    <h2>Learning Materials</h2>
+                    <p>Access and download all your course materials. Browse lectures, presentations, and documents uploaded by your professors.</p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-file-alt"></i>
+                            <div>
+                                <h3 id="totalMaterials">0</h3>
+                                <p>Available Materials</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="floating-card card-1">
+                        <i class="fas fa-book"></i>
+                        <span>Lectures</span>
+                    </div>
+                    <div class="floating-card card-2">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Documents</span>
+                    </div>
+                    <div class="floating-card card-3">
+                        <i class="fas fa-file-powerpoint"></i>
+                        <span>Presentations</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filter Tabs -->
+            <section class="filter-section" id="materials">
+                <div class="filter-header">
+                    <h3>Available Learning Materials</h3>
+                    <button class="btn btn-download-all" onclick="downloadAll()">
+                        <i class="fas fa-download"></i>
+                        Download All
+                    </button>
+                </div>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">
+                        <i class="fas fa-th"></i>
+                        All Materials
+                    </button>
+                    <button class="filter-tab" data-filter="Lecture">
+                        <i class="fas fa-chalkboard"></i>
+                        Lectures
+                    </button>
+                    <button class="filter-tab" data-filter="PPT">
+                        <i class="fas fa-file-powerpoint"></i>
+                        Presentations
+                    </button>
+                    <button class="filter-tab" data-filter="PDF">
+                        <i class="fas fa-file-pdf"></i>
+                        Documents
+                    </button>
+                    <button class="filter-tab" data-filter="Reading">
+                        <i class="fas fa-book-reader"></i>
+                        Readings
+                    </button>
+                </div>
+            </section>
+
+            <!-- Materials Grid -->
+            <section class="materials-section">
+                <div id="materials-grid" class="materials-grid">
+                    <!-- Loading state -->
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading materials...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
