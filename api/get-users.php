@@ -1,0 +1,42 @@
+<?php
+session_start();
+header('Content-Type: application/json');
+require_once 'db-config.php';
+
+// Check if user is admin
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
+
+$conn = getDBConnection();
+
+// Get all students (exclude admins)
+$stmt = $conn->prepare("SELECT id, username, email, full_name, is_verified, created_at, last_login FROM users WHERE role = 'student' ORDER BY created_at DESC");
+$stmt->execute();
+$result = $stmt->get_result();
+
+$users = [];
+while ($row = $result->fetch_assoc()) {
+    $users[] = $row;
+}
+
+// Get statistics
+$statsStmt = $conn->prepare("SELECT 
+    COUNT(*) as total,
+    SUM(CASE WHEN is_verified = 1 THEN 1 ELSE 0 END) as verified,
+    SUM(CASE WHEN is_verified = 0 THEN 1 ELSE 0 END) as pending
+    FROM users WHERE role = 'student'");
+$statsStmt->execute();
+$stats = $statsStmt->get_result()->fetch_assoc();
+
+echo json_encode([
+    'success' => true,
+    'users' => $users,
+    'stats' => $stats
+]);
+
+$statsStmt->close();
+$stmt->close();
+closeDBConnection($conn);
+?>

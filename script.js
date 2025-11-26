@@ -1,13 +1,161 @@
 // Global variables
 let allMaterials = [];
 let currentFilter = 'all';
+let isAuthenticated = false;
+
+// Check authentication on page load
+async function checkAuth() {
+    try {
+        const response = await fetch('api/check-auth.php');
+        const data = await response.json();
+        
+        const userMenu = document.getElementById('userMenu');
+        
+        if (!data.authenticated) {
+            // Show login button only
+            userMenu.innerHTML = `
+                <a href="login.html" class="btn btn-primary btn-small">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            `;
+            return false;
+        }
+        
+        // Show burger menu with user options
+        if (data.role === 'admin') {
+            userMenu.innerHTML = `
+                <button class="burger-menu-btn" onclick="toggleBurgerMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="burger-menu" id="burgerMenu">
+                    <div class="burger-menu-header">
+                        <i class="fas fa-user-circle"></i>
+                        <span>${data.full_name}</span>
+                    </div>
+                    <a href="admin.html" class="burger-menu-item">
+                        <i class="fas fa-user-shield"></i> Admin Panel
+                    </a>
+                    <button onclick="logout()" class="burger-menu-item logout-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            `;
+        } else {
+            userMenu.innerHTML = `
+                <button class="burger-menu-btn" onclick="toggleBurgerMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="burger-menu" id="burgerMenu">
+                    <div class="burger-menu-header">
+                        <i class="fas fa-user-circle"></i>
+                        <span>${data.full_name}</span>
+                    </div>
+                    <button onclick="logout()" class="burger-menu-item logout-item">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Show welcome toast notification
+        showWelcomeToast(data.full_name);
+        
+        return true;
+    } catch (error) {
+        // Show login button on error
+        const userMenu = document.getElementById('userMenu');
+        userMenu.innerHTML = `
+            <a href="login.html" class="btn btn-primary btn-small">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+        `;
+        return false;
+    }
+}
+
+// Toggle burger menu
+function toggleBurgerMenu() {
+    const menu = document.getElementById('burgerMenu');
+    if (menu) {
+        menu.classList.toggle('show');
+    }
+}
+
+// Close burger menu when clicking outside
+document.addEventListener('click', function(event) {
+    const menu = document.getElementById('burgerMenu');
+    const btn = document.querySelector('.burger-menu-btn');
+    
+    if (menu && btn && !menu.contains(event.target) && !btn.contains(event.target)) {
+        menu.classList.remove('show');
+    }
+});
+
+// Show welcome toast notification
+function showWelcomeToast(name) {
+    const toast = document.createElement('div');
+    toast.className = 'welcome-toast';
+    toast.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>Welcome, ${name}!</span>
+    `;
+    document.body.appendChild(toast);
+    
+    // Show toast
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+    
+    // Hide and remove toast after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Logout function
+async function logout() {
+    try {
+        await fetch('api/logout.php');
+        window.location.reload();
+    } catch (error) {
+        window.location.reload();
+    }
+}
 
 // Load materials on page load
-document.addEventListener('DOMContentLoaded', function() {
-    loadMaterials();
-    setupFilterTabs();
-    setupSearch();
+document.addEventListener('DOMContentLoaded', async function() {
+    isAuthenticated = await checkAuth();
+    
+    // Always load materials count for hero section
+    loadMaterialsCount();
+    
+    if (!isAuthenticated) {
+        // Show login required message
+        showLoginRequired();
+    } else {
+        // Load materials only if authenticated
+        loadMaterials();
+        setupFilterTabs();
+        setupSearch();
+    }
 });
+
+// Load materials count (public - for hero section)
+function loadMaterialsCount() {
+    fetch('api/get-materials.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateTotalMaterials(data.materials.length);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading materials count:', error);
+        });
+}
 
 // Setup search functionality
 function setupSearch() {
@@ -112,6 +260,23 @@ function showEmptyState() {
     `;
 }
 
+// Show login required message
+function showLoginRequired() {
+    const grid = document.getElementById('materials-grid');
+    grid.innerHTML = '';
+    
+    // Hide filter tabs and download all button
+    const filterSection = document.querySelector('.filter-section');
+    if (filterSection) {
+        filterSection.style.display = 'none';
+    }
+    
+    const materialsSection = document.querySelector('.materials-section');
+    if (materialsSection) {
+        materialsSection.style.display = 'none';
+    }
+}
+
 // Function to create material card
 function createMaterialCard(material) {
     const card = document.createElement('div');
@@ -165,11 +330,22 @@ function createMaterialCard(material) {
 
 // Function to download material
 function downloadMaterial(id) {
+    if (!isAuthenticated) {
+        alert('Please login to download materials');
+        window.location.href = 'login.html';
+        return;
+    }
     window.location.href = `api/download-material.php?id=${id}`;
 }
 
 // Download all materials
 function downloadAll() {
+    if (!isAuthenticated) {
+        alert('Please login to download materials');
+        window.location.href = 'login.html';
+        return;
+    }
+    
     if (allMaterials.length === 0) {
         alert('No materials available to download.');
         return;
