@@ -135,17 +135,21 @@ if (!file_exists($uploadPath)) {
     exit;
 }
 
-// Insert into database
+// Read file content
+$fileContent = file_get_contents($uploadPath);
+$mimeType = mime_content_type($uploadPath);
+
+// Insert into database with file content
 try {
     $conn = getDBConnection();
     
-    $stmt = $conn->prepare("INSERT INTO materials (title, description, type, file_name, file_path, upload_date) VALUES (?, ?, ?, ?, ?, NOW())");
+    $stmt = $conn->prepare("INSERT INTO materials (title, description, type, file_name, file_path, file_data, file_size, mime_type, upload_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
     
     if (!$stmt) {
         throw new Exception("Prepare failed: " . $conn->error);
     }
     
-    $stmt->bind_param("sssss", $title, $description, $type, $fileName, $newFileName);
+    $stmt->bind_param("ssssssis", $title, $description, $type, $fileName, $newFileName, $fileContent, $fileSize, $mimeType);
     
     if ($stmt->execute()) {
         echo json_encode([

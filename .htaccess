@@ -1,0 +1,25 @@
+# Set index.html as the default page
+DirectoryIndex index.html index.php
+
+# Redirect admin.html to login if not authenticated
+# (This is handled by JavaScript in admin.html)
+
+# Enable URL rewriting
+RewriteEngine On
+
+# Redirect root to index.html
+RewriteCond %{REQUEST_URI} ^/$
+RewriteRule ^$ index.html [L]
+
+# Prevent direct access to API files from browser
+<FilesMatch "^(db-config\.php)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>

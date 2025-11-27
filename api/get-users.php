@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 $conn = getDBConnection();
 
 // Get all students (exclude admins)
-$stmt = $conn->prepare("SELECT id, username, email, full_name, is_verified, created_at, last_login FROM users WHERE role = 'student' ORDER BY created_at DESC");
+$stmt = $conn->prepare("SELECT id, username, email, full_name, created_at, last_login FROM users WHERE role = 'student' ORDER BY created_at DESC");
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -24,8 +24,8 @@ while ($row = $result->fetch_assoc()) {
 // Get statistics
 $statsStmt = $conn->prepare("SELECT 
     COUNT(*) as total,
-    SUM(CASE WHEN is_verified = 1 THEN 1 ELSE 0 END) as verified,
-    SUM(CASE WHEN is_verified = 0 THEN 1 ELSE 0 END) as pending
+    SUM(CASE WHEN last_login IS NOT NULL THEN 1 ELSE 0 END) as active,
+    SUM(CASE WHEN created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY) THEN 1 ELSE 0 END) as recent
     FROM users WHERE role = 'student'");
 $statsStmt->execute();
 $stats = $statsStmt->get_result()->fetch_assoc();

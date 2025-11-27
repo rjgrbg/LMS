@@ -257,8 +257,28 @@ function loadAdminMaterials() {
         </div>
     `;
 
+    // Add timeout to show error if taking too long
+    const timeout = setTimeout(() => {
+        list.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Loading is taking longer than expected</h3>
+                <p>Please check your database connection</p>
+                <button class="btn btn-primary" onclick="loadAdminMaterials()">
+                    <i class="fas fa-redo"></i> Retry
+                </button>
+            </div>
+        `;
+    }, 10000); // 10 second timeout
+
     fetch('api/get-materials.php')
-        .then(response => response.json())
+        .then(response => {
+            clearTimeout(timeout);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             console.log('Materials loaded:', data);
             if (data.success) {
@@ -276,8 +296,18 @@ function loadAdminMaterials() {
             }
         })
         .catch(error => {
+            clearTimeout(timeout);
             console.error('Error loading materials:', error);
-            showEmptyState();
+            list.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Error Loading Materials</h3>
+                    <p>${error.message}</p>
+                    <button class="btn btn-primary" onclick="loadAdminMaterials()">
+                        <i class="fas fa-redo"></i> Retry
+                    </button>
+                </div>
+            `;
         });
 }
 
@@ -364,12 +394,19 @@ function createAdminMaterialCard(material) {
             </div>
         </div>
         <div class="admin-material-actions">
-            <button class="btn btn-edit btn-small" onclick='editMaterial(${JSON.stringify(material).replace(/'/g, "&#39;")})'>
-                <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="btn btn-delete btn-small" onclick="deleteMaterial(${material.id}, '${escapeHtml(material.title).replace(/'/g, "\\'")}')">
-                <i class="fas fa-trash"></i> Delete
-            </button>
+            <div class="action-dropdown">
+                <button class="action-menu-btn" onclick="toggleActionMenu(event, ${material.id})">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="action-menu" id="actionMenu${material.id}">
+                    <button class="action-menu-item" onclick='editMaterial(${JSON.stringify(material).replace(/'/g, "&#39;")})'>
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="action-menu-item delete" onclick="deleteMaterial(${material.id}, '${escapeHtml(material.title).replace(/'/g, "\\'")}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </div>
         </div>
     `;
 
@@ -516,3 +553,29 @@ window.onclick = function(event) {
         closeEditModal();
     }
 }
+
+// Toggle action menu dropdown
+function toggleActionMenu(event, materialId) {
+    event.stopPropagation();
+    const menu = document.getElementById(`actionMenu${materialId}`);
+    const allMenus = document.querySelectorAll('.action-menu');
+    
+    // Close all other menus
+    allMenus.forEach(m => {
+        if (m !== menu) {
+            m.classList.remove('show');
+        }
+    });
+    
+    // Toggle current menu
+    menu.classList.toggle('show');
+}
+
+// Close action menus when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.action-dropdown')) {
+        document.querySelectorAll('.action-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+});

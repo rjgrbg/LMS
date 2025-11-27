@@ -104,17 +104,17 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-user-check"></i>
+                    <i class="fas fa-user-graduate"></i>
                     <div>
-                        <h3 id="verifiedUsers">0</h3>
-                        <p>Verified Students</p>
+                        <h3 id="activeUsers">0</h3>
+                        <p>Active Students</p>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <i class="fas fa-user-clock"></i>
+                    <i class="fas fa-clock"></i>
                     <div>
-                        <h3 id="pendingUsers">0</h3>
-                        <p>Pending Verification</p>
+                        <h3 id="recentUsers">0</h3>
+                        <p>Recent Signups</p>
                     </div>
                 </div>
             </div>
@@ -136,7 +136,6 @@
                                 <th>Full Name</th>
                                 <th>Username</th>
                                 <th>Email</th>
-                                <th>Status</th>
                                 <th>Registered</th>
                                 <th>Last Login</th>
                             </tr>
@@ -193,7 +192,7 @@
                                     <option value="Lecture">Lecture</option>
                                     <option value="PDF">PDF Document</option>
                                     <option value="Reading">Reading Material</option>
-                                    <option value="Assignment">✏️ Assignment</option>
+                                    <option value="Assignment">Assignment</option>
                                 </select>
                             </div>
                         </div>
@@ -386,9 +385,9 @@
         async function logout() {
             try {
                 await fetch('api/logout.php');
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             } catch (error) {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
             }
         }
         
@@ -397,7 +396,7 @@
         
         async function loadUsers() {
             const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = '<tr><td colspan="7" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading students...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="loading-cell"><i class="fas fa-spinner fa-spin"></i> Loading students...</td></tr>';
             
             try {
                 const response = await fetch('api/get-users.php');
@@ -408,25 +407,25 @@
                     updateStats(data.stats);
                     displayUsers(allUsers);
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">Failed to load students</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">Failed to load students</td></tr>';
                 }
             } catch (error) {
                 console.error('Error loading users:', error);
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">Error loading students. Please refresh.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">Error loading students. Please refresh.</td></tr>';
             }
         }
         
         function updateStats(stats) {
             document.getElementById('totalUsers').textContent = stats.total || 0;
-            document.getElementById('verifiedUsers').textContent = stats.verified || 0;
-            document.getElementById('pendingUsers').textContent = stats.pending || 0;
+            document.getElementById('activeUsers').textContent = stats.active || 0;
+            document.getElementById('recentUsers').textContent = stats.recent || 0;
         }
         
         function displayUsers(users) {
             const tbody = document.getElementById('usersTableBody');
             
             if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">No students registered yet</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">No students registered yet</td></tr>';
                 return;
             }
             
@@ -436,12 +435,6 @@
                     <td>${user.full_name}</td>
                     <td>${user.username}</td>
                     <td>${user.email}</td>
-                    <td>
-                        <span class="status-badge ${user.is_verified ? 'verified' : 'pending'}">
-                            <i class="fas fa-${user.is_verified ? 'check-circle' : 'clock'}"></i>
-                            ${user.is_verified ? 'Verified' : 'Pending'}
-                        </span>
-                    </td>
                     <td>${formatDate(user.created_at)}</td>
                     <td>${user.last_login ? formatDate(user.last_login) : 'Never'}</td>
                 </tr>

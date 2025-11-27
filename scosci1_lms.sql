@@ -10,6 +10,9 @@ CREATE TABLE IF NOT EXISTS materials (
     type VARCHAR(50) NOT NULL,
     file_name VARCHAR(255) NOT NULL,
     file_path VARCHAR(255) NOT NULL,
+    file_data LONGBLOB,
+    file_size INT,
+    mime_type VARCHAR(100),
     upload_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_upload_date (upload_date),
     INDEX idx_type (type)

@@ -119,9 +119,9 @@ function showWelcomeToast(name) {
 async function logout() {
     try {
         await fetch('api/logout.php');
-        window.location.reload();
+        window.location.href = 'index.html';
     } catch (error) {
-        window.location.reload();
+        window.location.href = 'index.html';
     }
 }
 
@@ -135,11 +135,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!isAuthenticated) {
         // Show login required message
         showLoginRequired();
+        // Show features, about, and footer for non-logged in users
+        document.getElementById('featuresSection').style.display = 'block';
+        document.getElementById('aboutSection').style.display = 'block';
+        document.getElementById('footerSection').style.display = 'block';
     } else {
         // Load materials only if authenticated
         loadMaterials();
         setupFilterTabs();
         setupSearch();
+        // Hide features, about, and footer for logged in users
+        document.getElementById('featuresSection').style.display = 'none';
+        document.getElementById('aboutSection').style.display = 'none';
+        document.getElementById('footerSection').style.display = 'none';
     }
 });
 
