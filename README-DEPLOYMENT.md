@@ -133,4 +133,5 @@ For a PHP project like yours, I strongly recommend **InfinityFree** or **000webh
 - No Docker knowledge needed
 - Better for student projects
 
-Would you like help deploying to InfinityFree instead?
+Would you like help deploying to InfinityFree instead? yes
+
