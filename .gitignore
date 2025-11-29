@@ -1,0 +1,15 @@
+# Development files
+phpinfo.php
+test-db.php
+
+# Uploaded files (optional - remove if you want to track uploads)
+uploads/*
+!uploads/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

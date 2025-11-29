@@ -1,10 +1,11 @@
 <?php
 // Database configuration
-define('DB_HOST', '127.0.0.1');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'scosci1_lms');
-define('DB_PORT', 3306);
+// Use environment variables for production (Render), fallback to local for development
+define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_NAME', getenv('DB_NAME') ?: 'scosci1_lms');
+define('DB_PORT', getenv('DB_PORT') ?: 3306);
 
 // Create connection
 function getDBConnection() {
