@@ -89,7 +89,7 @@
         <main class="content">
 
         <!-- Students Section -->
-        <section id="studentsSection" class="admin-section">
+        <section id="studentsSection" class="admin-section" style="display: none;">
             <div class="section-title">
                 <h1><i class="fas fa-users"></i> Student Management</h1>
                 <p>View and manage registered students</p>
@@ -108,13 +108,6 @@
                     <div>
                         <h3 id="activeUsers">0</h3>
                         <p>Active Students</p>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-clock"></i>
-                    <div>
-                        <h3 id="recentUsers">0</h3>
-                        <p>Recent Signups</p>
                     </div>
                 </div>
             </div>
@@ -153,7 +146,7 @@
         </section>
         
         <!-- Materials Section -->
-        <section id="materialsSection" class="admin-section" style="display: none;">
+        <section id="materialsSection" class="admin-section">
             <div class="section-title">
                 <h1><i class="fas fa-folder-open"></i> Materials Management</h1>
                 <p>Upload and manage learning materials</p>
@@ -174,7 +167,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="materialTitle">
-                                    <i class="fas fa-heading"></i>
+                                    <i class="fas fa-book"></i>
                                     Material Title
                                 </label>
                                 <input type="text" id="materialTitle" name="title" required 
@@ -294,33 +287,45 @@
 
     <!-- Edit Modal -->
     <div id="editModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-edit"></i> Edit Material</h3>
-                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+        <div class="modal-content edit-modal-content">
+            <button class="modal-close" onclick="closeEditModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="edit-modal-header">
+                <div class="edit-icon">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <h2>Edit Material</h2>
+                <p>Update your learning material details</p>
             </div>
-            <form id="editForm" class="modal-form">
+
+            <form id="editForm" class="edit-modal-form">
                 <input type="hidden" id="editMaterialId">
                 
-                <div class="form-group">
-                    <label for="editTitle">
-                        <i class="fas fa-heading"></i>
-                        Material Title
-                    </label>
-                    <input type="text" id="editTitle" class="form-input" required>
-                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editTitle">
+                            <i class="fas fa-book"></i>
+                            Material Title
+                        </label>
+                        <input type="text" id="editTitle" class="form-input" required 
+                               placeholder="e.g., Lecture 1: Introduction">
+                    </div>
 
-                <div class="form-group">
-                    <label for="editType">
-                        <i class="fas fa-tag"></i>
-                        Material Type
-                    </label>
-                    <select id="editType" class="form-select" required>
-                        <option value="Lecture">📚 Lecture</option>
-                        <option value="PDF">📄 PDF Document</option>
-                        <option value="Reading">📖 Reading Material</option>
-                        <option value="Assignment">✏️ Assignment</option>
-                    </select>
+                    <div class="form-group">
+                        <label for="editType">
+                            <i class="fas fa-tag"></i>
+                            Material Type
+                        </label>
+                        <select id="editType" class="form-select" required>
+                            <option value="">Select type...</option>
+                            <option value="Lecture">Lecture</option>
+                            <option value="PDF">PDF Document</option>
+                            <option value="Reading">Reading Material</option>
+                            <option value="Assignment">Assignment</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -328,14 +333,15 @@
                         <i class="fas fa-align-left"></i>
                         Description
                     </label>
-                    <textarea id="editDescription" class="form-textarea" rows="4" required></textarea>
+                    <textarea id="editDescription" class="form-textarea" rows="4" required 
+                              placeholder="Provide a brief description of the material..."></textarea>
                 </div>
 
-                <div class="modal-actions">
+                <div class="edit-modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
                         <i class="fas fa-times"></i> Cancel
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary btn-large">
                         <i class="fas fa-save"></i> Save Changes
                     </button>
                 </div>
@@ -418,7 +424,6 @@
         function updateStats(stats) {
             document.getElementById('totalUsers').textContent = stats.total || 0;
             document.getElementById('activeUsers').textContent = stats.active || 0;
-            document.getElementById('recentUsers').textContent = stats.recent || 0;
         }
         
         function displayUsers(users) {

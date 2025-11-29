@@ -581,8 +581,8 @@ body {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
     animation: fadeIn 0.3s ease;
 }
 
@@ -599,8 +599,88 @@ body {
     max-width: 600px;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s ease;
+}
+
+.edit-modal-content {
+    width: 700px !important;
+    max-width: 700px !important;
+    min-height: 300px;
+    position: relative;
+    overflow: visible;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: var(--tertiary);
+    border: none;
+    font-size: 1.25rem;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.modal-close:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.edit-modal-header {
+    text-align: center;
+    padding: 2rem 2rem 1.5rem 2rem;
+    background: linear-gradient(135deg, var(--tertiary) 0%, var(--white) 100%);
+    border-radius: 20px 20px 0 0;
+}
+
+.edit-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+}
+
+.edit-icon i {
+    font-size: 1.25rem;
+    color: var(--white);
+}
+
+.edit-modal-header h2 {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin: 0 0 0.25rem 0;
+    font-weight: 700;
+}
+
+.edit-modal-header p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.edit-modal-form {
+    padding: 2rem;
+}
+
+.edit-modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
 }
 
 .modal-header {
@@ -618,27 +698,6 @@ body {
     align-items: center;
     gap: 0.75rem;
     margin: 0;
-}
-
-.modal-close {
-    background: none;
-    border: none;
-    font-size: 2rem;
-    color: var(--text-light);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-
-.modal-close:hover {
-    background: var(--tertiary);
-    color: var(--primary);
-    transform: rotate(90deg);
 }
 
 .modal-form {

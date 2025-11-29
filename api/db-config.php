@@ -1,23 +1,37 @@
 <?php
 // Database configuration
-define('DB_HOST', 'localhost');
+define('DB_HOST', '127.0.0.1');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'scosci1_lms');
+define('DB_PORT', 3306);
 
 // Create connection
 function getDBConnection() {
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    
-    // Check connection
-    if ($conn->connect_error) {
-        die(json_encode(['success' => false, 'message' => 'Database connection failed: ' . $conn->connect_error]));
+    try {
+        $conn = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, DB_PORT);
+        
+        // Check if connection was successful
+        if ($conn->connect_error) {
+            throw new Exception("Connection failed: " . $conn->connect_error);
+        }
+        
+        // Set charset to utf8mb4
+        if (!$conn->set_charset("utf8mb4")) {
+            throw new Exception("Error setting charset: " . $conn->error);
+        }
+        
+        return $conn;
+    } catch (Exception $e) {
+        error_log("Database connection error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Database error: MySQL server has gone away',
+            'details' => $e->getMessage()
+        ]);
+        exit;
     }
-    
-    // Set charset to utf8mb4
-    $conn->set_charset("utf8mb4");
-    
-    return $conn;
 }
 
 // Close connection

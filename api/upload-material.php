@@ -135,13 +135,16 @@ if (!file_exists($uploadPath)) {
     exit;
 }
 
-// Read file content
-$fileContent = file_get_contents($uploadPath);
+// Get MIME type
 $mimeType = mime_content_type($uploadPath);
 
-// Insert into database with file content
+// Insert into database
 try {
     $conn = getDBConnection();
+    
+    // Don't store file content in database - just use file path
+    // This avoids max_allowed_packet errors for large files
+    $fileContent = null;
     
     $stmt = $conn->prepare("INSERT INTO materials (title, description, type, file_name, file_path, file_data, file_size, mime_type, upload_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
     
