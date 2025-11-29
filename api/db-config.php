@@ -1,7 +1,8 @@
 <?php
 // Database configuration
-// Use environment variables for production (Render), fallback to local for development
-define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
+// Using environment variables for production (Render + Clever Cloud)
+// For local development, set these in your environment or use defaults
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
 define('DB_USER', getenv('DB_USER') ?: 'root');
 define('DB_PASS', getenv('DB_PASS') ?: '');
 define('DB_NAME', getenv('DB_NAME') ?: 'scosci1_lms');
