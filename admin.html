@@ -44,49 +44,251 @@
         }
     </script>
     
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <div class="logo-circle">
-                    <i class="fas fa-user-shield"></i>
-                </div>
-                <div class="logo-text">
-                    <h1>SCOSCI1</h1>
-                    <span>ADMIN PANEL</span>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle" onclick="toggleMobileSidebar()" style="display: none;">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Admin Layout with Sidebar -->
+    <div class="admin-layout">
+        <!-- Left Sidebar -->
+        <aside class="admin-sidebar-panel">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-circle">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>SCOSCI1</h1>
+                        <span>ADMIN PANEL</span>
+                    </div>
                 </div>
             </div>
-            <div class="nav-right">
-                <div class="user-menu">
-                    <button class="burger-menu-btn" onclick="toggleBurgerMenu()">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <div class="burger-menu" id="burgerMenu">
-                        <div class="burger-menu-header">
-                            <i class="fas fa-user-shield"></i>
-                            <span>Administrator</span>
+
+            <div class="sidebar-user">
+                <div class="user-info-simple">
+                    <h4 id="adminName">Administrator</h4>
+                    <span>Admin Panel</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="sidebar-nav-item active" onclick="showSection('dashboard')" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </button>
+                <a href="index.html" class="sidebar-nav-item sidebar-nav-link">
+                    <i class="fas fa-home"></i>
+                    <span>Homepage</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <button class="sidebar-nav-item" onclick="showSection('students')" data-section="students">
+                    <i class="fas fa-users"></i>
+                    <span>Students</span>
+                </button>
+                <button class="sidebar-nav-item" onclick="showSection('materials')" data-section="materials">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Materials</span>
+                </button>
+                <button class="sidebar-nav-item" onclick="showSection('classwork')" data-section="classwork">
+                    <i class="fas fa-tasks"></i>
+                    <span>Classwork</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="sidebar-footer-btn logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="admin-main">
+        <main class="content">
+
+        <!-- Dashboard Section -->
+        <section id="dashboardSection" class="admin-section">
+            <div class="dashboard-header">
+                <div>
+                    <h1>Dashboard</h1>
+                    <p>Welcome back! Here's what's happening with your LMS today.</p>
+                </div>
+                <div class="dashboard-date">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="dashboard-stats-grid">
+                <div class="stat-card-modern stat-primary">
+                    <div class="stat-card-header">
+                        <div class="stat-icon-modern">
+                            <i class="fas fa-users"></i>
                         </div>
-                        <button onclick="showSection('students'); toggleBurgerMenu();" class="burger-menu-item">
-                            <i class="fas fa-users"></i> Students
+                        <span class="stat-badge" id="dashRecentStudents">+0 new</span>
+                    </div>
+                    <div class="stat-card-body">
+                        <h2 id="dashTotalStudents">0</h2>
+                        <p>Total Students</p>
+                    </div>
+                    <div class="stat-card-footer">
+                        <button onclick="showSection('students')" class="stat-link">
+                            View all <i class="fas fa-arrow-right"></i>
                         </button>
-                        <button onclick="showSection('materials'); toggleBurgerMenu();" class="burger-menu-item">
-                            <i class="fas fa-folder-open"></i> Materials
+                    </div>
+                </div>
+
+                <div class="stat-card-modern stat-success">
+                    <div class="stat-card-header">
+                        <div class="stat-icon-modern">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <span class="stat-badge">Resources</span>
+                    </div>
+                    <div class="stat-card-body">
+                        <h2 id="dashTotalMaterials">0</h2>
+                        <p>Learning Materials</p>
+                    </div>
+                    <div class="stat-card-footer">
+                        <button onclick="showSection('materials')" class="stat-link">
+                            Manage <i class="fas fa-arrow-right"></i>
                         </button>
-                        <a href="index.html" class="burger-menu-item">
-                            <i class="fas fa-home"></i> Homepage
-                        </a>
-                        <button onclick="logout()" class="burger-menu-item logout-item">
-                            <i class="fas fa-sign-out-alt"></i> Logout
+                    </div>
+                </div>
+
+                <div class="stat-card-modern stat-info">
+                    <div class="stat-card-header">
+                        <div class="stat-icon-modern">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <span class="stat-badge">Active</span>
+                    </div>
+                    <div class="stat-card-body">
+                        <h2 id="dashTotalClassworks">0</h2>
+                        <p>Classwork Assignments</p>
+                    </div>
+                    <div class="stat-card-footer">
+                        <button onclick="showSection('classwork')" class="stat-link">
+                            View all <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stat-card-modern stat-warning">
+                    <div class="stat-card-header">
+                        <div class="stat-icon-modern">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <span class="stat-badge">Urgent</span>
+                    </div>
+                    <div class="stat-card-body">
+                        <h2 id="dashPendingGrading">0</h2>
+                        <p>Pending Grading</p>
+                    </div>
+                    <div class="stat-card-footer">
+                        <button onclick="showSection('classwork')" class="stat-link">
+                            Grade now <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
-    </nav>
-    
-    <!-- Main Content -->
-    <div class="main-wrapper">
-        <main class="content">
+
+            <!-- Activity Grid -->
+            <div class="dashboard-activity-grid">
+                <!-- Recent Submissions -->
+                <div class="activity-card">
+                    <div class="activity-card-header">
+                        <div class="activity-title">
+                            <i class="fas fa-paper-plane"></i>
+                            <h3>Recent Submissions</h3>
+                        </div>
+                        <button class="view-all-btn" onclick="showSection('classwork')">
+                            View All <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div id="recentSubmissionsList" class="activity-list">
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upcoming Deadlines -->
+                <div class="activity-card">
+                    <div class="activity-card-header">
+                        <div class="activity-title">
+                            <i class="fas fa-calendar-check"></i>
+                            <h3>Upcoming Deadlines</h3>
+                        </div>
+                        <button class="view-all-btn" onclick="showSection('classwork')">
+                            Manage <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div id="upcomingDeadlinesList" class="activity-list">
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Materials -->
+                <div class="activity-card activity-card-wide">
+                    <div class="activity-card-header">
+                        <div class="activity-title">
+                            <i class="fas fa-file-alt"></i>
+                            <h3>Recent Materials</h3>
+                        </div>
+                        <button class="view-all-btn" onclick="showSection('materials')">
+                            View All <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div id="recentMaterialsList" class="activity-list">
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="activity-card quick-actions-card">
+                    <div class="activity-card-header">
+                        <div class="activity-title">
+                            <i class="fas fa-bolt"></i>
+                            <h3>Quick Actions</h3>
+                        </div>
+                    </div>
+                    <div class="quick-actions-modern">
+                        <button class="quick-action-modern" onclick="showSection('classwork')">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <span>Create Classwork</span>
+                        </button>
+                        <button class="quick-action-modern" onclick="showSection('materials')">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <span>Upload Material</span>
+                        </button>
+                        <button class="quick-action-modern" onclick="showSection('students')">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span>View Students</span>
+                        </button>
+                        <button class="quick-action-modern" onclick="showSection('classwork')">
+                            <div class="quick-action-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span>Grade Work</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- Students Section -->
         <section id="studentsSection" class="admin-section" style="display: none;">
@@ -145,6 +347,94 @@
             </div>
         </section>
         
+        <!-- Classwork Section -->
+        <section id="classworkSection" class="admin-section" style="display: none;">
+            <div class="section-title">
+                <h1><i class="fas fa-tasks"></i> Classwork Management</h1>
+                <p>Create assignments and grade student submissions</p>
+            </div>
+            
+            <!-- Create Classwork Card -->
+            <div class="upload-section">
+                <div class="section-header">
+                    <div>
+                        <h2><i class="fas fa-plus-circle"></i> Create New Classwork</h2>
+                        <p>Assign work to your students</p>
+                    </div>
+                </div>
+
+                <div class="upload-card">
+                    <form id="createClassworkForm" class="upload-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="classworkTitle">
+                                    <i class="fas fa-heading"></i>
+                                    Assignment Title
+                                </label>
+                                <input type="text" id="classworkTitle" name="title" required 
+                                       placeholder="e.g., Essay on Globalization"
+                                       class="form-input">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="classworkMaxScore">
+                                    <i class="fas fa-star"></i>
+                                    Maximum Score
+                                </label>
+                                <input type="number" id="classworkMaxScore" name="max_score" required 
+                                       min="1" max="1000" value="100"
+                                       placeholder="100"
+                                       class="form-input">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="classworkDueDate">
+                                <i class="fas fa-calendar"></i>
+                                Due Date & Time
+                            </label>
+                            <input type="datetime-local" id="classworkDueDate" name="due_date" required 
+                                   class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="classworkDescription">
+                                <i class="fas fa-align-left"></i>
+                                Instructions
+                            </label>
+                            <textarea id="classworkDescription" name="description" rows="4" required 
+                                      placeholder="Provide detailed instructions for the assignment..."
+                                      class="form-textarea"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <i class="fas fa-plus"></i>
+                            Create Classwork
+                        </button>
+                    </form>
+
+                    <div id="createClassworkStatus" class="upload-status"></div>
+                </div>
+            </div>
+
+            <!-- Classwork List -->
+            <div class="materials-list-section">
+                <div class="section-header">
+                    <div>
+                        <h2><i class="fas fa-list"></i> All Classwork</h2>
+                        <p>Manage assignments and view submissions</p>
+                    </div>
+                </div>
+
+                <div id="adminClassworkList" class="admin-materials-list">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading classwork...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Materials Section -->
         <section id="materialsSection" class="admin-section">
             <div class="section-title">
@@ -283,6 +573,85 @@
             </main>
         </section>
         </main>
+        </div>
+    </div>
+
+    <!-- Submissions Modal -->
+    <div id="submissionsModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <button class="modal-close" onclick="closeSubmissionsModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="edit-modal-header">
+                <div class="edit-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <h2 id="submissionsModalTitle">Student Submissions</h2>
+                <p id="submissionsModalSubtitle"></p>
+            </div>
+
+            <div class="edit-modal-form">
+                <div id="submissionsList" class="submissions-list">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading submissions...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Modal -->
+    <div id="gradeModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeGradeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="edit-modal-header">
+                <div class="edit-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h2>Grade Submission</h2>
+                <p id="gradeModalStudent"></p>
+            </div>
+
+            <form id="gradeForm" class="edit-modal-form">
+                <input type="hidden" id="gradeSubmissionId">
+                <input type="hidden" id="gradeMaxScore">
+                
+                <div class="form-group">
+                    <label for="gradeScore">
+                        <i class="fas fa-star"></i>
+                        Score
+                    </label>
+                    <input type="number" id="gradeScore" class="form-input" required 
+                           min="0" placeholder="Enter score">
+                    <small id="gradeScoreHint" style="color: #718096; margin-top: 0.5rem; display: block;"></small>
+                </div>
+
+                <div class="form-group">
+                    <label for="gradeFeedback">
+                        <i class="fas fa-comment"></i>
+                        Feedback (Optional)
+                    </label>
+                    <textarea id="gradeFeedback" class="form-textarea" rows="4" 
+                              placeholder="Provide feedback to the student..."></textarea>
+                </div>
+
+                <div class="edit-modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeGradeModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-check"></i> Submit Grade
+                    </button>
+                </div>
+            </form>
+            
+            <div id="gradeStatus" class="upload-status"></div>
+        </div>
     </div>
 
     <!-- Edit Modal -->
@@ -355,34 +724,14 @@
             const menu = document.getElementById('burgerMenu');
             if (menu) {
                 menu.classList.toggle('show');
-                
-                // Add/remove overlay
-                let overlay = document.querySelector('.burger-menu-overlay');
-                if (!overlay) {
-                    overlay = document.createElement('div');
-                    overlay.className = 'burger-menu-overlay';
-                    overlay.onclick = closeBurgerMenu;
-                    document.body.appendChild(overlay);
-                }
-                
-                if (menu.classList.contains('show')) {
-                    setTimeout(() => overlay.classList.add('show'), 10);
-                } else {
-                    overlay.classList.remove('show');
-                }
             }
         }
         
         // Close burger menu
         function closeBurgerMenu() {
             const menu = document.getElementById('burgerMenu');
-            const overlay = document.querySelector('.burger-menu-overlay');
-            
             if (menu) {
                 menu.classList.remove('show');
-            }
-            if (overlay) {
-                overlay.classList.remove('show');
             }
         }
         
@@ -398,21 +747,62 @@
         
         // Section switching
         function showSection(section) {
+            // Hide all sections
             document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
             
-            if (section === 'students') {
+            // Update active state in sidebar
+            document.querySelectorAll('.sidebar-nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-section') === section) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Show selected section
+            if (section === 'dashboard') {
+                document.getElementById('dashboardSection').style.display = 'block';
+                loadDashboard();
+            } else if (section === 'students') {
                 document.getElementById('studentsSection').style.display = 'block';
                 if (allUsers.length === 0) {
                     loadUsers();
                 }
             } else if (section === 'materials') {
                 document.getElementById('materialsSection').style.display = 'block';
+            } else if (section === 'classwork') {
+                document.getElementById('classworkSection').style.display = 'block';
+                loadAdminClassworks();
             }
         }
         
-        // Load students on page load
+        // Mobile sidebar toggle
+        function toggleMobileSidebar() {
+            const sidebar = document.querySelector('.admin-sidebar-panel');
+            sidebar.classList.toggle('mobile-open');
+        }
+        
+        // Close sidebar when clicking nav item on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768 && e.target.closest('.sidebar-nav-item')) {
+                const sidebar = document.querySelector('.admin-sidebar-panel');
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+        
+        // Update current date
+        function updateCurrentDate() {
+            const dateElement = document.getElementById('currentDate');
+            if (dateElement) {
+                const now = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                dateElement.textContent = now.toLocaleDateString('en-US', options);
+            }
+        }
+        
+        // Load dashboard on page load
         document.addEventListener('DOMContentLoaded', function() {
-            loadUsers();
+            updateCurrentDate();
+            showSection('dashboard');
         });
         
         // Logout function
@@ -502,5 +892,7 @@
         });
     </script>
     <script src="admin-script.js"></script>
+    <script src="admin-classwork-script.js"></script>
+    <script src="admin-dashboard-script.js"></script>
 </body>
 </html>

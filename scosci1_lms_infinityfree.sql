@@ -56,3 +56,39 @@ ON DUPLICATE KEY UPDATE
     password = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     role = 'admin',
     is_verified = 1;
+
+-- Classwork System Tables
+
+-- Table for classwork assignments
+CREATE TABLE IF NOT EXISTS classworks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    due_date DATETIME NOT NULL,
+    max_score INT DEFAULT 100,
+    created_by INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('active', 'closed') DEFAULT 'active',
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_status (status),
+    INDEX idx_due_date (due_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Table for student submissions
+CREATE TABLE IF NOT EXISTS classwork_submissions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    classwork_id INT NOT NULL,
+    student_id INT NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    score INT DEFAULT NULL,
+    feedback TEXT DEFAULT NULL,
+    status ENUM('submitted', 'graded', 'late') DEFAULT 'submitted',
+    FOREIGN KEY (classwork_id) REFERENCES classworks(id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_submission (classwork_id, student_id),
+    INDEX idx_student (student_id),
+    INDEX idx_classwork (classwork_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

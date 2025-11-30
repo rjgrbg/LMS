@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classwork - SCOSCI1 LMS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <script>
+        // Check student authentication
+        async function checkStudentAuth() {
+            try {
+                const response = await fetch('api/check-auth.php');
+                const data = await response.json();
+                if (!data.authenticated) {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+        checkStudentAuth();
+    </script>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-circle">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>SCOSCI1</h1>
+                    <span>CLASSWORK</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search classwork..." class="search-box" id="searchBox">
+                </div>
+                <div class="user-menu" id="userMenu">
+                    <button class="burger-menu-btn" onclick="toggleBurgerMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="burger-menu" id="burgerMenu">
+                        <div class="burger-menu-header">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Student</span>
+                        </div>
+                        <a href="index.html" class="burger-menu-item">
+                            <i class="fas fa-home"></i> Materials
+                        </a>
+                        <a href="classwork.html" class="burger-menu-item">
+                            <i class="fas fa-tasks"></i> Classwork
+                        </a>
+                        <button onclick="logout()" class="burger-menu-item logout-item">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <main class="content">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <div class="welcome-badge">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>Submit Your Work</span>
+                    </div>
+                    <h2>Classwork Assignments</h2>
+                    <p>View assignments, submit your work, and track your scores.</p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-clipboard-list"></i>
+                            <div>
+                                <h3 id="totalClassworks">0</h3>
+                                <p>Total Assignments</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-circle"></i>
+                            <div>
+                                <h3 id="submittedCount">0</h3>
+                                <p>Submitted</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <h3 id="averageScore">-</h3>
+                                <p>Average Score</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filter Section -->
+            <section class="filter-section">
+                <div class="filter-header">
+                    <h3>Available Classwork</h3>
+                </div>
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="all">
+                        <i class="fas fa-th"></i>
+                        All Assignments
+                    </button>
+                    <button class="filter-tab" data-filter="pending">
+                        <i class="fas fa-clock"></i>
+                        Pending
+                    </button>
+                    <button class="filter-tab" data-filter="submitted">
+                        <i class="fas fa-check"></i>
+                        Submitted
+                    </button>
+                    <button class="filter-tab" data-filter="graded">
+                        <i class="fas fa-star"></i>
+                        Graded
+                    </button>
+                </div>
+            </section>
+
+            <!-- Classwork Grid -->
+            <section class="materials-section">
+                <div id="classwork-grid" class="materials-grid">
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading classwork...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Submit Modal -->
+    <div id="submitModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeSubmitModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="edit-modal-header">
+                <div class="edit-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <h2>Submit Classwork</h2>
+                <p id="modalClassworkTitle"></p>
+            </div>
+
+            <form id="submitForm" class="edit-modal-form" enctype="multipart/form-data">
+                <input type="hidden" id="classworkId">
+                
+                <div class="form-group">
+                    <label for="submissionFile">
+                        <i class="fas fa-file-upload"></i>
+                        Upload Your Work
+                    </label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="submissionFile" name="file" required 
+                               accept=".pdf,.doc,.docx,.ppt,.pptx,.zip" class="file-input">
+                        <div class="file-upload-display">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Click to browse or drag and drop your file here</p>
+                            <span>Accepted: PDF, DOC, DOCX, PPT, PPTX, ZIP (Max 50MB)</span>
+                        </div>
+                    </div>
+                    <div id="submitFileName" class="file-name"></div>
+                </div>
+
+                <div class="edit-modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeSubmitModal()">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-paper-plane"></i> Submit Work
+                    </button>
+                </div>
+            </form>
+            
+            <div id="submitStatus" class="upload-status"></div>
+        </div>
+    </div>
+
+    <script src="classwork-script.js"></script>
+</body>
+</html>

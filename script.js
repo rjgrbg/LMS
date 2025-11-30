@@ -21,7 +21,7 @@ async function checkAuth() {
             return false;
         }
         
-        // Show burger menu with user options
+        // Show burger menu with user options (for all screen sizes)
         if (data.role === 'admin') {
             userMenu.innerHTML = `
                 <button class="burger-menu-btn" onclick="toggleBurgerMenu()">
@@ -50,6 +50,12 @@ async function checkAuth() {
                         <i class="fas fa-user-circle"></i>
                         <span>${data.full_name}</span>
                     </div>
+                    <a href="index.html" class="burger-menu-item">
+                        <i class="fas fa-book"></i> Materials
+                    </a>
+                    <a href="classwork.html" class="burger-menu-item">
+                        <i class="fas fa-tasks"></i> Classwork
+                    </a>
                     <button onclick="logout()" class="burger-menu-item logout-item">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </button>
@@ -78,34 +84,14 @@ function toggleBurgerMenu() {
     const menu = document.getElementById('burgerMenu');
     if (menu) {
         menu.classList.toggle('show');
-        
-        // Add/remove overlay
-        let overlay = document.querySelector('.burger-menu-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.className = 'burger-menu-overlay';
-            overlay.onclick = closeBurgerMenu;
-            document.body.appendChild(overlay);
-        }
-        
-        if (menu.classList.contains('show')) {
-            setTimeout(() => overlay.classList.add('show'), 10);
-        } else {
-            overlay.classList.remove('show');
-        }
     }
 }
 
 // Close burger menu
 function closeBurgerMenu() {
     const menu = document.getElementById('burgerMenu');
-    const overlay = document.querySelector('.burger-menu-overlay');
-    
     if (menu) {
         menu.classList.remove('show');
-    }
-    if (overlay) {
-        overlay.classList.remove('show');
     }
 }
 
