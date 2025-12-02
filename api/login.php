@@ -16,7 +16,7 @@ $password = $data['password'];
 $conn = getDBConnection();
 
 // Check if input is email or username
-$stmt = $conn->prepare("SELECT id, username, password, email, full_name, role, is_verified FROM users WHERE username = ? OR email = ?");
+$stmt = $conn->prepare("SELECT id, username, password, email, full_name, role, is_verified, profile_picture, student_id FROM users WHERE username = ? OR email = ?");
 $stmt->bind_param("ss", $username, $username);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -50,6 +50,8 @@ $_SESSION['username'] = $user['username'];
 $_SESSION['email'] = $user['email'];
 $_SESSION['full_name'] = $user['full_name'];
 $_SESSION['role'] = $user['role'];
+$_SESSION['student_id'] = $user['student_id'] ?? null;
+$_SESSION['profile_picture'] = $user['profile_picture'] ?? null;
 
 echo json_encode([
     'success' => true,

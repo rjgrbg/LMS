@@ -6,8 +6,6 @@ function loadDashboard() {
         .then(data => {
             if (data.success) {
                 updateDashboardStats(data.stats);
-                displayRecentSubmissions(data.recent_submissions);
-                displayUpcomingDeadlines(data.upcoming_deadlines);
                 displayRecentMaterials(data.recent_materials);
             } else {
                 console.error('Failed to load dashboard:', data.message);
@@ -16,89 +14,51 @@ function loadDashboard() {
         .catch(error => {
             console.error('Error loading dashboard:', error);
         });
+    
+    // Load statistics charts
+    if (typeof loadStatistics === 'function') {
+        loadStatistics();
+    }
 }
 
 function updateDashboardStats(stats) {
     document.getElementById('dashTotalStudents').textContent = stats.total_students || 0;
     document.getElementById('dashTotalMaterials').textContent = stats.total_materials || 0;
-    document.getElementById('dashTotalClassworks').textContent = stats.total_classworks || 0;
-    document.getElementById('dashPendingGrading').textContent = stats.pending_grading || 0;
     document.getElementById('dashRecentStudents').textContent = `+${stats.recent_students || 0} this week`;
+    
+    // Update chart with animation
+    updateMaterialsChart(stats);
 }
 
-function displayRecentSubmissions(submissions) {
-    const list = document.getElementById('recentSubmissionsList');
+function updateMaterialsChart(stats) {
+    const lectures = stats.lectures || 0;
+    const pdfs = stats.pdfs || 0;
+    const readings = stats.readings || 0;
+    const assignments = stats.assignments || 0;
     
-    if (!submissions || submissions.length === 0) {
-        list.innerHTML = `
-            <div class="empty-state-small">
-                <i class="fas fa-inbox"></i>
-                <p>No recent submissions</p>
-            </div>
-        `;
-        return;
-    }
+    // Find the maximum value for scaling
+    const maxValue = Math.max(lectures, pdfs, readings, assignments, 1);
     
-    list.innerHTML = '';
-    submissions.forEach(submission => {
-        const date = new Date(submission.submitted_at);
-        const timeAgo = getTimeAgo(date);
-        
-        const statusClass = submission.status === 'graded' ? 'success' : 'warning';
-        const statusText = submission.status === 'graded' ? 'Graded' : 'Pending';
-        
-        const item = document.createElement('div');
-        item.className = 'dashboard-list-item';
-        item.innerHTML = `
-            <div class="list-item-icon ${statusClass}">
-                <i class="fas fa-${submission.status === 'graded' ? 'check-circle' : 'clock'}"></i>
-            </div>
-            <div class="list-item-content">
-                <h4>${escapeHtml(submission.full_name)}</h4>
-                <p>${escapeHtml(submission.classwork_title)}</p>
-                <small>${timeAgo}</small>
-            </div>
-            <span class="badge badge-${statusClass}">${statusText}</span>
-        `;
-        list.appendChild(item);
-    });
-}
-
-function displayUpcomingDeadlines(deadlines) {
-    const list = document.getElementById('upcomingDeadlinesList');
+    // Get all chart bars
+    const chartBars = document.querySelectorAll('.chart-bar');
+    const values = [lectures, pdfs, readings, assignments];
     
-    if (!deadlines || deadlines.length === 0) {
-        list.innerHTML = `
-            <div class="empty-state-small">
-                <i class="fas fa-calendar-check"></i>
-                <p>No upcoming deadlines</p>
-            </div>
-        `;
-        return;
-    }
-    
-    list.innerHTML = '';
-    deadlines.forEach(deadline => {
-        const dueDate = new Date(deadline.due_date);
-        const now = new Date();
-        const daysUntil = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+    // Animate each bar
+    chartBars.forEach((bar, index) => {
+        const value = values[index];
+        const percentage = (value / maxValue) * 100;
         
-        const urgencyClass = daysUntil <= 2 ? 'danger' : daysUntil <= 5 ? 'warning' : 'info';
+        // Update value display
+        const valueSpan = bar.querySelector('.chart-value');
+        if (valueSpan) {
+            valueSpan.textContent = value;
+        }
         
-        const item = document.createElement('div');
-        item.className = 'dashboard-list-item';
-        item.innerHTML = `
-            <div class="list-item-icon ${urgencyClass}">
-                <i class="fas fa-calendar-alt"></i>
-            </div>
-            <div class="list-item-content">
-                <h4>${escapeHtml(deadline.title)}</h4>
-                <p>${dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
-                <small>${daysUntil} day${daysUntil !== 1 ? 's' : ''} remaining</small>
-            </div>
-            <span class="badge badge-${urgencyClass}">${deadline.max_score} pts</span>
-        `;
-        list.appendChild(item);
+        // Animate height with a slight delay for each bar
+        setTimeout(() => {
+            bar.style.height = `${Math.max(percentage, 16)}%`; // Minimum 16% for visibility
+            bar.setAttribute('data-value', value);
+        }, index * 100);
     });
 }
 

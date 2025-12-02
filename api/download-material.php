@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'db-config.php';
 
 // Check if ID is provided
@@ -7,6 +8,7 @@ if (!isset($_GET['id'])) {
 }
 
 $id = intval($_GET['id']);
+$user_id = $_SESSION['user_id'] ?? null;
 
 $conn = getDBConnection();
 
@@ -26,6 +28,17 @@ $filePath = '../uploads/' . $material['file_path'];
 // Check if file exists
 if (!file_exists($filePath)) {
     die('File not found');
+}
+
+// Track download
+try {
+    $trackStmt = $conn->prepare("INSERT INTO downloads (material_id, user_id) VALUES (?, ?)");
+    $trackStmt->bind_param("ii", $id, $user_id);
+    $trackStmt->execute();
+    $trackStmt->close();
+} catch (Exception $e) {
+    // Continue even if tracking fails
+    error_log("Download tracking failed: " . $e->getMessage());
 }
 
 // Set headers for download

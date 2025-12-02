@@ -34,12 +34,39 @@
                     </div>
                 </div>
                 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="studentId">
+                            <i class="fas fa-id-badge"></i>
+                            Student ID
+                        </label>
+                        <input type="text" id="studentId" name="studentId" required placeholder="Enter your student ID">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">
+                            <i class="fas fa-envelope"></i>
+                            Email Address
+                        </label>
+                        <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    </div>
+                </div>
+                
                 <div class="form-group">
-                    <label for="email">
-                        <i class="fas fa-envelope"></i>
-                        Email Address
+                    <label for="profilePicture">
+                        <i class="fas fa-camera"></i>
+                        Profile Picture (Optional)
                     </label>
-                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                    <div class="profile-upload-wrapper">
+                        <input type="file" id="profilePicture" name="profilePicture" accept="image/*" style="display: none;" onchange="previewProfilePicture(event)">
+                        <div class="profile-preview" onclick="document.getElementById('profilePicture').click()">
+                            <div class="profile-preview-placeholder" id="profilePreview">
+                                <i class="fas fa-user-circle"></i>
+                                <p>Click to upload</p>
+                            </div>
+                        </div>
+                        <small style="color: #718096; display: block; margin-top: 0.5rem;">JPG, PNG or GIF (Max 5MB)</small>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -82,6 +109,32 @@
         </div>
     </div>
 
+    <script>
+        function previewProfilePicture(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                return;
+            }
+            
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                event.target.value = '';
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('profilePreview');
+                preview.innerHTML = `<img src="${e.target.result}" alt="Profile Preview">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
     <script src="auth.js"></script>
 </body>
 </html>

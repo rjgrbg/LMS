@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 $conn = getDBConnection();
 
 // Get all students (exclude admins)
-$stmt = $conn->prepare("SELECT id, username, email, full_name, created_at, last_login FROM users WHERE role = 'student' ORDER BY created_at DESC");
+$stmt = $conn->prepare("SELECT id, username, email, full_name, student_id, created_at, last_login FROM users WHERE role = 'student' ORDER BY created_at DESC");
 $stmt->execute();
 $result = $stmt->get_result();
 

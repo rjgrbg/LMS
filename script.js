@@ -3,6 +3,26 @@ let allMaterials = [];
 let currentFilter = 'all';
 let isAuthenticated = false;
 
+// Avatar utility functions (inline for compatibility)
+function getInitials(fullName) {
+    if (!fullName) return '?';
+    const names = fullName.trim().split(' ');
+    if (names.length === 1) {
+        return names[0].charAt(0).toUpperCase();
+    }
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
+}
+
+function getAvatarColor(fullName) {
+    const colors = ['#7C9473', '#4299e1', '#ed8936', '#48bb78', '#9f7aea', '#f56565', '#38b2ac', '#ed64a6'];
+    if (!fullName) return colors[0];
+    let hash = 0;
+    for (let i = 0; i < fullName.length; i++) {
+        hash = fullName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colors[Math.abs(hash) % colors.length];
+}
+
 // Check authentication on page load
 async function checkAuth() {
     try {
@@ -21,6 +41,11 @@ async function checkAuth() {
             return false;
         }
         
+        // Generate profile avatar HTML
+        const avatarHTML = data.profile_picture 
+            ? `<img src="${data.profile_picture}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`
+            : `<div style="width: 40px; height: 40px; border-radius: 50%; background: ${getAvatarColor(data.full_name)}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem;">${getInitials(data.full_name)}</div>`;
+        
         // Show burger menu with user options (for all screen sizes)
         if (data.role === 'admin') {
             userMenu.innerHTML = `
@@ -29,7 +54,7 @@ async function checkAuth() {
                 </button>
                 <div class="burger-menu" id="burgerMenu">
                     <div class="burger-menu-header">
-                        <i class="fas fa-user-circle"></i>
+                        ${avatarHTML}
                         <span>${data.full_name}</span>
                     </div>
                     <a href="admin.html" class="burger-menu-item">
@@ -47,14 +72,14 @@ async function checkAuth() {
                 </button>
                 <div class="burger-menu" id="burgerMenu">
                     <div class="burger-menu-header">
-                        <i class="fas fa-user-circle"></i>
+                        ${avatarHTML}
                         <span>${data.full_name}</span>
                     </div>
                     <a href="index.html" class="burger-menu-item">
                         <i class="fas fa-book"></i> Materials
                     </a>
-                    <a href="classwork.html" class="burger-menu-item">
-                        <i class="fas fa-tasks"></i> Classwork
+                    <a href="profile.html" class="burger-menu-item">
+                        <i class="fas fa-user-cog"></i> Profile Settings
                     </a>
                     <button onclick="logout()" class="burger-menu-item logout-item">
                         <i class="fas fa-sign-out-alt"></i> Logout

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Settings - SCOSCI1 LMS</title>
+    <link rel="stylesheet" href="style.css?v=2.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="avatar-utils.js"></script>
+</head>
+<body>
+    <script>
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('api/check-auth.php');
+                const data = await response.json();
+                if (!data.authenticated) {
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                window.location.href = 'login.html';
+            }
+        }
+        checkAuth();
+    </script>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-circle">
+                    <i class="fas fa-user-cog"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>SCOSCI1</h1>
+                    <span>PROFILE</span>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="user-menu" id="userMenu">
+                    <button class="burger-menu-btn" onclick="toggleBurgerMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="burger-menu" id="burgerMenu">
+                        <div class="burger-menu-header">
+                            <i class="fas fa-user-circle"></i>
+                            <span id="userName">Student</span>
+                        </div>
+                        <a href="index.html" class="burger-menu-item">
+                            <i class="fas fa-book"></i> Materials
+                        </a>
+                        <a href="profile.html" class="burger-menu-item">
+                            <i class="fas fa-user-cog"></i> Profile Settings
+                        </a>
+                        <button onclick="logout()" class="burger-menu-item logout-item">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-wrapper">
+        <main class="content">
+            <div class="profile-container">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar-wrapper-large">
+                                <div class="profile-avatar-large" id="profileAvatarLarge">
+                                    <i class="fas fa-user" id="profileAvatarIcon"></i>
+                                    <img id="profileAvatarImage" style="display: none;" alt="Profile">
+                                </div>
+                                <button onclick="document.getElementById('profilePictureInput').click()" title="Change photo" style="position: absolute; bottom: 0; right: 0; width: 36px; height: 36px; border-radius: 50%; background: #2d3748; border: 3px solid white; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.25);">
+                                    <i class="fas fa-camera" style="font-size: 0.9rem;"></i>
+                                </button>
+                            </div>
+                            <input type="file" id="profilePictureInput" accept="image/*" style="display: none;" onchange="previewProfilePicture(event)">
+                        </div>
+                        <div class="profile-info">
+                            <h2 id="profileFullName">Student</h2>
+                            <p id="profileStudentId" class="profile-student-id" style="display: none;">Student ID: Loading...</p>
+                        </div>
+                    </div>
+                    
+                    <form id="profileForm" class="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profileName">
+                                    <i class="fas fa-user"></i>
+                                    Full Name
+                                </label>
+                                <input type="text" id="profileName" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="profileUsername">
+                                    <i class="fas fa-at"></i>
+                                    Username
+                                </label>
+                                <input type="text" id="profileUsername" class="form-input" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="profileEmail">
+                                <i class="fas fa-envelope"></i>
+                                Email Address
+                            </label>
+                            <input type="email" id="profileEmail" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-divider">
+                            <span>Change Password (Optional)</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="currentPassword">
+                                <i class="fas fa-lock"></i>
+                                Current Password
+                            </label>
+                            <input type="password" id="currentPassword" class="form-input" placeholder="Leave blank to keep current password">
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="newPassword">
+                                    <i class="fas fa-key"></i>
+                                    New Password
+                                </label>
+                                <input type="password" id="newPassword" class="form-input" placeholder="Enter new password">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirmPassword">
+                                    <i class="fas fa-check-circle"></i>
+                                    Confirm Password
+                                </label>
+                                <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm new password">
+                            </div>
+                        </div>
+                        
+                        <div class="profile-actions">
+                            <button type="submit" class="btn btn-primary btn-large">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="profileStatus" class="upload-status"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="auth.js"></script>
+    <script>
+        // Store selected profile picture file
+        let selectedProfilePicture = null;
+        let currentProfileData = null;
+        
+        // Toggle burger menu
+        function toggleBurgerMenu() {
+            const menu = document.getElementById('burgerMenu');
+            if (menu) {
+                menu.classList.toggle('show');
+            }
+        }
+        
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('api/logout.php');
+                window.location.href = 'index.html';
+            } catch (error) {
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // Close burger menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('burgerMenu');
+            const btn = document.querySelector('.burger-menu-btn');
+            
+            if (menu && btn && !menu.contains(event.target) && !btn.contains(event.target)) {
+                menu.classList.remove('show');
+            }
+        });
+        
+        // Load profile data
+        async function loadProfileData() {
+            try {
+                const response = await fetch('api/check-auth.php');
+                const data = await response.json();
+                
+                if (data.authenticated) {
+                    currentProfileData = data;
+                    document.getElementById('userName').textContent = data.full_name;
+                    document.getElementById('profileFullName').textContent = data.full_name;
+                    
+                    // Display student ID
+                    const studentIdElement = document.getElementById('profileStudentId');
+                    if (data.student_id) {
+                        studentIdElement.textContent = 'Student ID: ' + data.student_id;
+                        studentIdElement.style.display = 'block';
+                    } else {
+                        studentIdElement.style.display = 'none';
+                    }
+                    
+                    document.getElementById('profileName').value = data.full_name;
+                    document.getElementById('profileUsername').value = data.username;
+                    document.getElementById('profileEmail').value = data.email || '';
+                    
+                    // Debug: Log profile picture data
+                    console.log('Profile Picture:', data.profile_picture);
+                    console.log('Full Name:', data.full_name);
+                    
+                    // Update avatar with current profile picture
+                    updateAvatarDisplay('profileAvatarLarge', data.profile_picture, data.full_name, 120);
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+            }
+        }
+        
+        // Preview profile picture (don't upload yet)
+        function previewProfilePicture(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file');
+                event.target.value = '';
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                event.target.value = '';
+                return;
+            }
+            
+            // Store the file for later upload
+            selectedProfilePicture = file;
+            
+            // Preview the image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const avatarContainer = document.getElementById('profileAvatarLarge');
+                const avatarIcon = document.getElementById('profileAvatarIcon');
+                const avatarImage = document.getElementById('profileAvatarImage');
+                
+                avatarImage.src = e.target.result;
+                avatarImage.style.display = 'block';
+                avatarIcon.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+            
+            showProfileMessage('Photo selected. Click "Save Changes" to update.', 'success');
+        }
+        
+        // Upload profile picture to server
+        async function uploadProfilePicture() {
+            if (!selectedProfilePicture) return null;
+            
+            const formData = new FormData();
+            formData.append('profile_picture', selectedProfilePicture);
+            
+            try {
+                const response = await fetch('api/upload-profile-picture.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    return data.profile_picture;
+                } else {
+                    throw new Error(data.message || 'Failed to upload profile picture');
+                }
+            } catch (error) {
+                throw error;
+            }
+        }
+        
+        // Handle profile form submission
+        document.getElementById('profileForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await updateProfile();
+        });
+        
+        async function updateProfile() {
+            const statusDiv = document.getElementById('profileStatus');
+            const fullName = document.getElementById('profileName').value.trim();
+            const email = document.getElementById('profileEmail').value.trim();
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!fullName || !email) {
+                showProfileMessage('Please fill in all required fields', 'error');
+                return;
+            }
+            
+            if (newPassword || confirmPassword) {
+                if (!currentPassword) {
+                    showProfileMessage('Please enter your current password', 'error');
+                    return;
+                }
+                if (newPassword !== confirmPassword) {
+                    showProfileMessage('New passwords do not match', 'error');
+                    return;
+                }
+                if (newPassword.length < 6) {
+                    showProfileMessage('New password must be at least 6 characters', 'error');
+                    return;
+                }
+            }
+            
+            statusDiv.className = 'upload-status show';
+            statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating profile...';
+            
+            try {
+                // Upload profile picture first if one was selected
+                let uploadedPicturePath = null;
+                if (selectedProfilePicture) {
+                    try {
+                        uploadedPicturePath = await uploadProfilePicture();
+                    } catch (error) {
+                        showProfileMessage('Failed to upload profile picture: ' + error.message, 'error');
+                        return;
+                    }
+                }
+                
+                // Update profile information
+                const response = await fetch('api/update-profile.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        full_name: fullName,
+                        email: email,
+                        current_password: currentPassword,
+                        new_password: newPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showProfileMessage('Profile updated successfully!', 'success');
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    document.getElementById('userName').textContent = fullName;
+                    document.getElementById('profileFullName').textContent = fullName;
+                    
+                    // Clear selected profile picture
+                    selectedProfilePicture = null;
+                    document.getElementById('profilePictureInput').value = '';
+                    
+                    // Reload profile data to get updated info
+                    await loadProfileData();
+                } else {
+                    showProfileMessage(data.message || 'Failed to update profile', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showProfileMessage('Network error. Please try again.', 'error');
+            }
+        }
+        
+        function showProfileMessage(message, type) {
+            const statusDiv = document.getElementById('profileStatus');
+            statusDiv.className = `upload-status ${type} show`;
+            statusDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            
+            setTimeout(() => {
+                statusDiv.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Load profile on page load
+        loadProfileData();
+    </script>
+</body>
+</html>

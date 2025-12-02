@@ -57,20 +57,46 @@ if (document.getElementById('signupForm')) {
     document.getElementById('signupForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        const fullName = document.getElementById('fullName').value.trim();
-        const username = document.getElementById('username').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
+        const fullName = document.getElementById('fullName')?.value.trim() || '';
+        const username = document.getElementById('username')?.value.trim() || '';
+        const email = document.getElementById('email')?.value.trim() || '';
+        const password = document.getElementById('password')?.value || '';
+        const confirmPassword = document.getElementById('confirmPassword')?.value || '';
         const errorDiv = document.getElementById('errorMessage');
         const submitBtn = e.target.querySelector('button[type="submit"]');
+        
+        console.log('Form values:', { fullName, username, email, password: '***', confirmPassword: '***' });
         
         // Clear previous errors
         errorDiv.style.display = 'none';
         
-        // Validation
-        if (!fullName || !username || !email || !password || !confirmPassword) {
-            errorDiv.textContent = 'All fields are required!';
+        // Validation - check each field individually for better error messages
+        if (!fullName) {
+            errorDiv.textContent = 'Full Name is required!';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        if (!username) {
+            errorDiv.textContent = 'Username is required!';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        if (!email) {
+            errorDiv.textContent = 'Email Address is required!';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        if (!password) {
+            errorDiv.textContent = 'Password is required!';
+            errorDiv.style.display = 'block';
+            return;
+        }
+        
+        if (!confirmPassword) {
+            errorDiv.textContent = 'Please confirm your password!';
             errorDiv.style.display = 'block';
             return;
         }
@@ -92,10 +118,22 @@ if (document.getElementById('signupForm')) {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
         
         try {
-            const response = await fetch('api/signup.php', {
+            // Create FormData to handle file upload
+            const formData = new FormData();
+            formData.append('fullName', fullName);
+            formData.append('username', username);
+            formData.append('email', email);
+            formData.append('password', password);
+            
+            // Add profile picture if selected
+            const profilePictureInput = document.getElementById('profilePicture');
+            if (profilePictureInput && profilePictureInput.files[0]) {
+                formData.append('profilePicture', profilePictureInput.files[0]);
+            }
+            
+            const response = await fetch('api/signup-with-picture.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName, username, email, password })
+                body: formData
             });
             
             const data = await response.json();
