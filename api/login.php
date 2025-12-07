@@ -1,7 +1,15 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-require_once 'db-config.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
+try {
+    require_once 'db-config.php';
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
+    exit;
+}
 
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -13,7 +21,12 @@ if (!isset($data['username']) || !isset($data['password'])) {
 $username = trim($data['username']);
 $password = $data['password'];
 
-$conn = getDBConnection();
+try {
+    $conn = getDBConnection();
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Database connection error: ' . $e->getMessage()]);
+    exit;
+}
 
 // Check if input is email or username
 $stmt = $conn->prepare("SELECT id, username, password, email, full_name, role, is_verified, profile_picture, student_id FROM users WHERE username = ? OR email = ?");
