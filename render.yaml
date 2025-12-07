@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: scosci1_lms
-    env: docker
+    name: scosci1-lms
+    runtime: docker
     plan: free
-    healthCheckPath: /
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: DB_HOST
         sync: false
@@ -13,3 +13,5 @@ services:
         sync: false
       - key: DB_NAME
         sync: false
+      - key: DB_PORT
+        value: 3306

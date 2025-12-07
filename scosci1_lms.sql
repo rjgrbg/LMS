@@ -1,6 +1,5 @@
--- Create database
-CREATE DATABASE IF NOT EXISTS scosci1_lms;
-USE scosci1_lms;
+-- Database already created by Clever Cloud
+-- USE scosci1_lms;
 
 -- Create materials table
 CREATE TABLE IF NOT EXISTS materials (

@@ -1,7 +1,7 @@
 <?php
-// Database configuration
-// Using environment variables for production (Render + Clever Cloud)
-// For local development, set these in your environment or use defaults
+// Database configuration for Render + Clever Cloud
+// Uses environment variables set in Render dashboard
+// For local development, falls back to localhost
 define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
 define('DB_USER', getenv('DB_USER') ?: 'root');
 define('DB_PASS', getenv('DB_PASS') ?: '');

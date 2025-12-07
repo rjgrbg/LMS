@@ -1,7 +1,24 @@
+# Git files
 .git
 .gitignore
-.vscode
-node_modules
+
+# Documentation
 *.md
+INFINITYFREE-DEPLOYMENT.md
+RENDER-CLEVERCLOUD-DEPLOYMENT.md
+deploy.md
+
+# IDE
+.vscode
+.idea
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local development
 phpinfo.php
 test-db.php
+
+# Database dump (already imported to Clever Cloud)
+scosci1_lms.sql

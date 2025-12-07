@@ -43,19 +43,7 @@
                         <i class="fas fa-bars"></i>
                     </button>
                     <div class="burger-menu" id="burgerMenu">
-                        <div class="burger-menu-header">
-                            <i class="fas fa-user-circle"></i>
-                            <span id="userName">Student</span>
-                        </div>
-                        <a href="index.html" class="burger-menu-item">
-                            <i class="fas fa-book"></i> Materials
-                        </a>
-                        <a href="profile.html" class="burger-menu-item">
-                            <i class="fas fa-user-cog"></i> Profile Settings
-                        </a>
-                        <button onclick="logout()" class="burger-menu-item logout-item">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </button>
+                        <!-- Dynamically populated -->
                     </div>
                 </div>
             </div>
@@ -161,6 +149,30 @@
         let selectedProfilePicture = null;
         let currentProfileData = null;
         
+        // Update burger menu with avatar
+        function updateBurgerMenu(data) {
+            const avatarHTML = data.profile_picture 
+                ? `<img src="${data.profile_picture}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`
+                : `<div style="width: 40px; height: 40px; border-radius: 50%; background: ${getAvatarColor(data.full_name)}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem;">${getInitials(data.full_name)}</div>`;
+            
+            const burgerMenu = document.getElementById('burgerMenu');
+            burgerMenu.innerHTML = `
+                <div class="burger-menu-header">
+                    ${avatarHTML}
+                    <span>${data.full_name}</span>
+                </div>
+                <a href="index.html" class="burger-menu-item">
+                    <i class="fas fa-book"></i> Materials
+                </a>
+                <a href="profile.html" class="burger-menu-item">
+                    <i class="fas fa-user-cog"></i> Profile Settings
+                </a>
+                <button onclick="logout()" class="burger-menu-item logout-item">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            `;
+        }
+        
         // Toggle burger menu
         function toggleBurgerMenu() {
             const menu = document.getElementById('burgerMenu');
@@ -197,7 +209,6 @@
                 
                 if (data.authenticated) {
                     currentProfileData = data;
-                    document.getElementById('userName').textContent = data.full_name;
                     document.getElementById('profileFullName').textContent = data.full_name;
                     
                     // Display student ID
@@ -213,9 +224,8 @@
                     document.getElementById('profileUsername').value = data.username;
                     document.getElementById('profileEmail').value = data.email || '';
                     
-                    // Debug: Log profile picture data
-                    console.log('Profile Picture:', data.profile_picture);
-                    console.log('Full Name:', data.full_name);
+                    // Update burger menu with avatar
+                    updateBurgerMenu(data);
                     
                     // Update avatar with current profile picture
                     updateAvatarDisplay('profileAvatarLarge', data.profile_picture, data.full_name, 120);
@@ -356,14 +366,13 @@
                     document.getElementById('currentPassword').value = '';
                     document.getElementById('newPassword').value = '';
                     document.getElementById('confirmPassword').value = '';
-                    document.getElementById('userName').textContent = fullName;
                     document.getElementById('profileFullName').textContent = fullName;
                     
                     // Clear selected profile picture
                     selectedProfilePicture = null;
                     document.getElementById('profilePictureInput').value = '';
                     
-                    // Reload profile data to get updated info
+                    // Reload profile data to get updated info including burger menu
                     await loadProfileData();
                 } else {
                     showProfileMessage(data.message || 'Failed to update profile', 'error');
