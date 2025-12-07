@@ -1,10 +1,9 @@
 <?php
 header('Content-Type: application/json');
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 
-// Test database connection
-echo json_encode([
+$response = [
     'test' => 'Database Connection Test',
     'env_vars' => [
         'DB_HOST' => getenv('DB_HOST') ?: 'not set',
@@ -13,36 +12,31 @@ echo json_encode([
         'DB_PORT' => getenv('DB_PORT') ?: 'not set',
         'DB_PASS' => getenv('DB_PASS') ? 'set (hidden)' : 'not set'
     ]
-]);
-
-require_once 'db-config.php';
+];
 
 try {
+    require_once 'db-config.php';
     $conn = getDBConnection();
     
     // Test query
     $result = $conn->query("SELECT COUNT(*) as count FROM users");
     if ($result) {
         $row = $result->fetch_assoc();
-        echo json_encode([
-            'success' => true,
-            'message' => 'Database connected successfully!',
-            'user_count' => $row['count']
-        ]);
+        $response['success'] = true;
+        $response['message'] = 'Database connected successfully!';
+        $response['user_count'] = $row['count'];
     } else {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Connected but query failed',
-            'error' => $conn->error
-        ]);
+        $response['success'] = false;
+        $response['message'] = 'Connected but query failed';
+        $response['error'] = $conn->error;
     }
     
     closeDBConnection($conn);
 } catch (Exception $e) {
-    echo json_encode([
-        'success' => false,
-        'message' => 'Connection failed',
-        'error' => $e->getMessage()
-    ]);
+    $response['success'] = false;
+    $response['message'] = 'Connection failed';
+    $response['error'] = $e->getMessage();
 }
+
+echo json_encode($response, JSON_PRETTY_PRINT);
 ?>

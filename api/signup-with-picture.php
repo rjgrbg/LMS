@@ -3,7 +3,12 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 0);
 
-require_once 'db-config.php';
+try {
+    require_once 'db-config.php';
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $e->getMessage()]);
+    exit;
+}
 
 // Get form data
 $fullName = isset($_POST['fullName']) ? trim($_POST['fullName']) : '';
@@ -30,7 +35,12 @@ if (strlen($password) < 6) {
     exit;
 }
 
-$conn = getDBConnection();
+try {
+    $conn = getDBConnection();
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'Database connection error: ' . $e->getMessage()]);
+    exit;
+}
 
 // Check if username already exists
 $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
