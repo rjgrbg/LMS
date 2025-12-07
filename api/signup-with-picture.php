@@ -7,12 +7,13 @@ require_once 'db-config.php';
 
 // Get form data
 $fullName = isset($_POST['fullName']) ? trim($_POST['fullName']) : '';
-$studentId = isset($_POST['studentId']) ? trim($_POST['studentId']) : '';
+$studentId = isset($_POST['studentId']) ? trim($_POST['studentId']) : null;
 $username = isset($_POST['username']) ? trim($_POST['username']) : '';
 $email = isset($_POST['email']) ? trim($_POST['email']) : '';
 $password = isset($_POST['password']) ? $_POST['password'] : '';
 
-if (empty($fullName) || empty($studentId) || empty($username) || empty($email) || empty($password)) {
+// Validate required fields (studentId is optional)
+if (empty($fullName) || empty($username) || empty($email) || empty($password)) {
     echo json_encode(['success' => false, 'message' => 'All fields are required']);
     exit;
 }
@@ -81,17 +82,19 @@ if (isset($_FILES['profilePicture']) && $_FILES['profilePicture']['error'] === U
 // Hash password
 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-// Check if student ID already exists
-$stmt = $conn->prepare("SELECT id FROM users WHERE student_id = ?");
-$stmt->bind_param("s", $studentId);
-$stmt->execute();
-if ($stmt->get_result()->num_rows > 0) {
-    echo json_encode(['success' => false, 'message' => 'Student ID already registered']);
+// Check if student ID already exists (only if provided)
+if (!empty($studentId)) {
+    $stmt = $conn->prepare("SELECT id FROM users WHERE student_id = ?");
+    $stmt->bind_param("s", $studentId);
+    $stmt->execute();
+    if ($stmt->get_result()->num_rows > 0) {
+        echo json_encode(['success' => false, 'message' => 'Student ID already registered']);
+        $stmt->close();
+        closeDBConnection($conn);
+        exit;
+    }
     $stmt->close();
-    closeDBConnection($conn);
-    exit;
 }
-$stmt->close();
 
 // Insert user
 $stmt = $conn->prepare("INSERT INTO users (username, password, email, full_name, student_id, profile_picture, is_verified) VALUES (?, ?, ?, ?, ?, ?, 1)");

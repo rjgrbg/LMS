@@ -125,6 +125,12 @@ if (document.getElementById('signupForm')) {
             formData.append('email', email);
             formData.append('password', password);
             
+            // Add student ID if present
+            const studentIdInput = document.getElementById('studentId');
+            if (studentIdInput) {
+                formData.append('studentId', studentIdInput.value.trim());
+            }
+            
             // Add profile picture if selected
             const profilePictureInput = document.getElementById('profilePicture');
             if (profilePictureInput && profilePictureInput.files[0]) {
