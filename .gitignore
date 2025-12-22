@@ -1,22 +1,8 @@
-# Development files
-phpinfo.php
-test-db.php
-
-# Uploaded files (these will be lost on Render free tier restarts)
+node_modules/
+.env
 uploads/*
 !uploads/.gitkeep
-profile_pictures/*
-!profile_pictures/.gitkeep
-submissions/*
-!submissions/.gitkeep
-
-# IDE
-.vscode/
-.idea/
-
-# OS files
+profile-pictures/*
+!profile-pictures/.gitkeep
+*.log
 .DS_Store
-Thumbs.db
-
-# Deployment (keep these for reference)
-# INFINITYFREE-DEPLOYMENT.md
