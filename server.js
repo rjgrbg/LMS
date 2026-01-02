@@ -42,7 +42,16 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ success: false, message: 'Internal server error' });
+});
+
 // Start server
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📁 Static files served from: public/`);
+  console.log(`📤 Uploads directory: uploads/`);
+  console.log(`👤 Profile pictures: profile-pictures/`);
 });

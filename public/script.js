@@ -43,7 +43,7 @@ async function checkAuth() {
         
         // Generate profile avatar HTML
         const avatarHTML = data.profile_picture 
-            ? `<img src="${data.profile_picture}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`
+            ? `<img src="profile-pictures/${data.profile_picture}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`
             : `<div style="width: 40px; height: 40px; border-radius: 50%; background: ${getAvatarColor(data.full_name)}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1rem;">${getInitials(data.full_name)}</div>`;
         
         // Show burger menu with user options (for all screen sizes)
@@ -157,10 +157,21 @@ function showWelcomeToast(name) {
 // Logout function
 async function logout() {
     try {
-        await fetch('api/logout.php');
+        const response = await fetch('api/logout.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await response.json();
+        
+        // Clear session and redirect
         window.location.href = 'index.html';
+        // Force reload to clear any cached data
+        window.location.reload();
     } catch (error) {
+        console.error('Logout error:', error);
+        // Still redirect even if there's an error
         window.location.href = 'index.html';
+        window.location.reload();
     }
 }
 

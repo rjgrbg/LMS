@@ -107,14 +107,47 @@ router.get('/get-dashboard-stats.php', requireAdmin, async (req, res) => {
     const [materials] = await pool.query('SELECT COUNT(*) as count FROM materials');
     const [users] = await pool.query('SELECT COUNT(*) as count FROM users WHERE role = "student"');
     const [downloads] = await pool.query('SELECT COUNT(*) as count FROM downloads');
+    
+    // Get recent students (this week)
+    const [recentStudents] = await pool.query(
+      'SELECT COUNT(*) as count FROM users WHERE role = "student" AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)'
+    );
+    
+    // Get materials by type
+    const [materialsByType] = await pool.query(
+      'SELECT type, COUNT(*) as count FROM materials GROUP BY type'
+    );
+    
+    // Get recent materials
+    const [recentMaterials] = await pool.query(
+      'SELECT id, title, type, file_name, upload_date FROM materials ORDER BY upload_date DESC LIMIT 5'
+    );
+    
+    // Count by type
+    const stats = {
+      total_students: users[0].count,
+      total_materials: materials[0].count,
+      total_downloads: downloads[0].count,
+      recent_students: recentStudents[0].count,
+      lectures: 0,
+      pdfs: 0,
+      readings: 0,
+      assignments: 0
+    };
+    
+    // Map material types
+    materialsByType.forEach(item => {
+      const type = item.type.toLowerCase();
+      if (type === 'lecture') stats.lectures = item.count;
+      else if (type === 'pdf') stats.pdfs = item.count;
+      else if (type === 'reading') stats.readings = item.count;
+      else if (type === 'assignment') stats.assignments = item.count;
+    });
 
     res.json({
       success: true,
-      stats: {
-        totalMaterials: materials[0].count,
-        totalStudents: users[0].count,
-        totalDownloads: downloads[0].count
-      }
+      stats,
+      recent_materials: recentMaterials
     });
   } catch (error) {
     console.error('Get stats error:', error);

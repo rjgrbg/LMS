@@ -137,4 +137,34 @@ router.put('/update-material.php', requireAdmin, async (req, res) => {
   }
 });
 
+// Download all materials as ZIP
+router.get('/download-all.php', async (req, res) => {
+  try {
+    const archiver = require('archiver');
+    const [materials] = await pool.query('SELECT file_name, file_path FROM materials');
+
+    if (materials.length === 0) {
+      return res.status(404).json({ success: false, message: 'No materials available' });
+    }
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', 'attachment; filename=all-materials.zip');
+
+    const archive = archiver('zip', { zlib: { level: 9 } });
+    archive.pipe(res);
+
+    materials.forEach(material => {
+      const filePath = path.join(__dirname, '..', 'uploads', material.file_path);
+      if (fs.existsSync(filePath)) {
+        archive.file(filePath, { name: material.file_name });
+      }
+    });
+
+    await archive.finalize();
+  } catch (error) {
+    console.error('Download all error:', error);
+    res.status(500).json({ success: false, message: 'Download failed' });
+  }
+});
+
 module.exports = router;
